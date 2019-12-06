@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sns">
+	<select id="listSNSImg" resultType="snsimgvo">
+		select * from sns_img
+		order by
+		sns_img_no
+	</select>
+	<select id="nextNoSNSLike" resultType="java.lang.Integer">
+		select nvl(max(like_no),0)
+		+ 1 from sns_like
+	</select>
+	<select id="isClicked" resultType="java.lang.Integer">
+		select count(*) from sns_like where sns_no = #{sns_no} and
+		<if test="cust_no !=0 and provider_no ==0">
+			cust_no = #{cust_no}
+		</if>
+		<if test="cust_no ==0 and provider_no !=0">
+			provider_no = #{provider_no}
+		</if>
+	</select>
+	<insert id="insertSNSLike" parameterType="java.lang.Integer">
+		insert into sns_like values
+		<if test="cust_no !=0 and provider_no == 0">
+			(#{like_no},#{sns_no},#{cust_no},null)
+		</if>
+		<if test="cust_no ==0 and provider_no !=0">
+			(#{like_no},#{sns_no},null,#{provider_no})
+		</if>
+	</insert>
+	<delete id="deleteSNSLike" parameterType="java.lang.Integer">
+		delete from sns_like
+		where sns_no = #{sns_no} and
+		<if test="cust_no !=0 and provider_no ==0">
+			cust_no = #{cust_no}
+		</if>
+		<if test="cust_no ==0 and provider_no !=0">
+			provider_no = #{provider_no}
+		</if>
+	</delete>
+
+	<select id="nextNoSNSReply" resultType="java.lang.Integer">
+		select
+		nvl(max(reply_no),0) + 1 from sns_reply
+	</select>
+	<insert id="insertSNSReply" parameterType="snsreplyvo">
+		insert into sns_reply values
+		<if test="cust_no !=0 and provider_no ==0">
+			(#{reply_no},#{reply_content},#{cust_no},#{sns_no},null,sysdate)
+		</if>
+		<if test="cust_no ==0 and provider_no !=0">
+			(#{reply_no},#{reply_content},null,#{sns_no},#{provider_no},sysdate)
+		</if>
+	</insert>
+
+	<select id="getSNSLike" resultType="java.lang.Integer">
+		select count(*) from sns_like
+		where sns_no = #{sns_no}
+	</select>
+	<select id="getSNS" resultType="snsvo">
+		select sns_no,sns_content,
+		TO_CHAR(sns_write_date,'YYYY-MM-DD') sns_write_date,
+		cust_no,
+		provider_no from sns where sns_no = #{sns_no}
+	</select>
+	<select id="getSNSImg" resultType="snsimgvo">
+		select sns_img_no,
+		sns_img_name, sns_no from sns_img
+		where sns_no in #{sns_no}
+	</select>
+	<select id="getSNSReply" resultType="snsreplyvo">
+		select reply_no,
+		reply_content, cust_no, sns_no, provider_no,
+		TO_CHAR(reply_write_date,'YYYY-MM-DD') reply_write_date from sns_reply
+		where sns_no in #{sns_no}
+		order by reply_write_date
+	</select>
+	<select id="getSNSTag" resultType="snstagvo">
+		select tag_no, tag_name,
+		sns_no from sns_tag
+		where
+		sns_no in #{sns_no}
+	</select>
+	<select id="getCustInfo" resultType="customervo">
+		select * from customer
+		where
+		cust_no =#{cust_no}
+	</select>
+	<select id="getProvInfo" resultType="providervo">
+		select * from provider
+		where
+		provider_no =#{provider_no}
+	</select>
+
+
+
+	<select id="snsSchImg" resultType="snsvo">
+		select s.sns_no, si.sns_img_name, st.tag_name, st.tag_no
+			from sns_img si, sns_tag st, sns s
+			where s.sns_no=si.sns_no
+			and s.sns_no=st.sns_no
+			<if test="keyword != null and keyword != ''">
+				and st.tag_name=#{keyword}
+			</if>
+	</select>
+
+
+	<select id="cntFollower" resultType="java.lang.Integer">
+		select count(*) from ( select type, cust_no pick_no, cust_nick pick_nick, cust_img pick_img
+			from ( select type, no from follow where f_type=#{f_type} and f_no=#{f_no}  ), customer c
+			where cust_no=no and type='customer'
+			UNION
+			select type, provider_no pick_no, pro_nick pick_nick, pro_img pick_img
+			from ( select type, no from follow where f_type=#{f_type} and f_no=#{f_no}  ), provider p
+			where provider_no=no and type='provider' )
+	</select>
+	
+	<select id="cntFollowing" resultType="java.lang.Integer">
+		select count(*) from ( select f_type type, cust_no pick_no, cust_nick pick_nick, cust_img pick_img
+		from ( select f_type, f_no from follow where type=#{type} and no=#{no} ), customer c
+			where cust_no=f_no and f_type='customer'
+			UNION
+			select f_type type, provider_no pick_no, pro_nick pick_nick, pro_img pick_img
+			from ( select f_type, f_no from follow where type=#{type} and no=#{no} ), provider p
+			where provider_no=f_no and f_type='provider' )
+	</select>
+
+	<select id="listFollowing" resultType="followervo">
+		select f_type type, cust_no pick_no, cust_nick pick_nick, cust_img pick_img
+		from ( select f_type, f_no from follow
+			where type=#{type} and no=#{no} ), 
+		     customer c
+		where cust_no=f_no and f_type='customer'
+		UNION
+		select f_type type, provider_no pick_no, pro_nick pick_nick, pro_img pick_img
+		from ( select f_type, f_no from follow
+			where type=#{type} and no=#{no} ), 
+		     provider p
+		where provider_no=f_no and f_type='provider'
+	</select>
+	<select id="listFollower" resultType="followervo">
+		select type, cust_no pick_no, cust_nick pick_nick, cust_img pick_img
+		from ( select type, no from follow
+			where f_type=#{f_type} and f_no=#{f_no} ), 
+		     customer c
+		where cust_no=no and type='customer'
+		UNION
+		select type, provider_no pick_no, pro_nick pick_nick, pro_img pick_img
+		from ( select type, no from follow
+			where f_type=#{f_type} and f_no=#{f_no} ), 
+		     provider p
+		where provider_no=no and type='provider'
+	</select>
+	
+	<select id="listSnsMyPage" resultType="snsimgvo">
+		select s.sns_no sns_no, sns_img_name
+		from sns_img si, sns s
+		where s.sns_no=si.sns_no and 
+		
+		<if test="cust_no == -1">
+			cust_no is null and provider_no=#{provider_no}
+		</if>
+		<if test="provider_no == -1" >
+			cust_no=#{cust_no} and provider_no is null
+		</if>
+		order by s.sns_no, sns_img_no
+	</select>
+
+	<select id="isFollow" resultType="java.lang.Integer">
+		select count(follow_no) from follow where type=#{type} and no=#{no} 
+		and f_type=#{f_type} and f_no=#{f_no}
+	</select>
+
+	<select id="getNextFollowNo" resultType="java.lang.Integer">
+		select nvl(max(follow_no),0)+1 from follow
+	</select>
+	<insert id="insertFollow" parameterType="followvo">
+		insert into follow values (#{follow_no}, #{type}, #{no}, #{f_type}, #{f_no} )
+	</insert>
+	
+	<delete id="deleteFollow" parameterType="followvo">
+		delete follow where type=#{type} and no=#{no} 
+		and f_type=#{f_type} and f_no=#{f_no}
+	</delete>
+	
+
+	<select id="getNextSNSNo" resultType="java.lang.Integer">
+		select nvl(max(sns_no),0)+1 from sns
+	</select>
+	<select id="getNextSNSImgNo" resultType="java.lang.Integer">
+		select nvl(max(sns_img_no),0)+1 from sns_img
+	</select>
+	<select id="getNextSNSTagNo" resultType="java.lang.Integer">
+		select nvl(max(tag_no),0)+1 from sns_tag
+	</select>
+	
+	<insert id="insertSNS" parameterType="snsvo">
+		<if test="cust_no == -1">
+			insert into sns values (#{sns_no}, #{sns_content}, sysdate, null, #{provider_no})
+		
+		</if>
+		<if test="provider_no == -1" >
+			insert into sns values (#{sns_no}, #{sns_content}, sysdate, #{cust_no}, null)
+		</if>
+		
+	</insert>
+	<insert id="insertSNSImg" parameterType="snsimgvo" >
+		insert into sns_img values (#{sns_img_no}, #{sns_img_name}, #{sns_no})
+	</insert>
+	<insert id="insertSNSTag" parameterType="snstagvo" >
+		insert into sns_tag values (#{tag_no}, #{tag_name}, #{sns_no})
+	</insert>
+</mapper>

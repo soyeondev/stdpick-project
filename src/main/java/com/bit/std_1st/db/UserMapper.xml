@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user">
+
+
+    <!--   개인 회원가입 -->
+  <insert id="insertCustomer">
+ 	INSERT INTO CUSTOMER (cust_no, cust_name, cust_nick, cust_img, phone, addr, email, id, pwd, cust_info)
+	VALUES ( (select nvl(max(CUST_NO)+1,0) from CUSTOMER), #{cust_name}, #{cust_nick}, #{cust_img}, #{phone},#{addr} ,
+	#{email}, #{id}, #{pwd}, #{cust_info})
+  </insert>
+
+	<!-- <개인 정보 수정 -->
+    <update id="updateCustomer">
+ 	UPDATE CUSTOMER SET cust_name = #{cust_name}, cust_nick = #{cust_nick}, cust_img = #{cust_img}, phone = #{phone},
+ 	addr = #{addr}, email = #{email}, pwd = #{pwd}, cust_info = #{cust_info} WHERE id = #{id}
+  </update>
+
+    <select id="selectCustomer" resultType="customervo" parameterType="String">
+        SELECT * FROM customer WHERE id=#{id}
+    </select>
+
+    <!-- 닉네임 중복체크 -->
+    <select id="check_nick" resultType="java.lang.Integer" parameterType="customervo">
+  	SELECT count(*) as cnt FROM customer WHERE cust_nick=#{cust_nick}
+  </select>
+
+
+    <!-- 아이디 중복체크 -->
+    <select id="check_id" resultType="java.lang.Integer" parameterType="customervo">
+  	SELECT count(*) as cnt FROM customer WHERE id=#{id}
+  </select>
+
+    <!--   사업자 회원가입 -->
+    <insert id="insertProvider">
+ 	INSERT INTO PROVIDER (provider_no, pro_name, pro_nick, pro_img, phone,addr ,email, id, pwd, pro_info)
+	VALUES ((select nvl(max(provider_no)+1,0) from provider), #{pro_name}, #{pro_nick}, #{pro_img}, #{phone}, 
+	#{addr} ,#{email}, #{id}, #{pwd}, #{pro_info})
+  </insert>
+
+	<!-- 사업자 정보 수정 -->
+    <update id="updateProvider">
+        UPDATE PROVIDER SET pro_name = #{pro_name}, pro_nick = #{pro_nick}, pro_img = #{pro_img}, phone = #{phone},
+ 	addr=#{addr}, email = #{email}, pwd = #{pwd}, pro_info = #{pro_info} WHERE id = #{id}
+    </update>
+
+    <select id="selectProvider" resultType="providervo" parameterType="String">
+        SELECT * FROM provider WHERE id=#{id}
+    </select>
+
+    <!-- 사업자 닉네임 중복체크 -->
+    <select id="check_pro_nick" resultType="java.lang.Integer" parameterType="providervo">
+  	SELECT count(*) as cnt FROM provider WHERE pro_nick=#{pro_nick}
+  </select>
+
+
+    <!-- 사업자 아이디 중복체크 -->
+    <select id="check_pro_id" resultType="java.lang.Integer" parameterType="providervo">
+  	SELECT count(*) as cnt FROM provider WHERE id=#{id}
+  </select>
+
+<select id="countCafePassSale" resultType="java.lang.Integer">
+	select count(*)
+	from ( select rownum n,  pay_no,  cafe_name, product, totalprice,  id
+	from ( select rownum n, pay_no,  cafe_name, CONCAT(CONCAT(pass_content, ' : '), amount) product, totalprice,  id
+		from customer cust, (select cafe_no, cafe_name, pass_no, pass_content, amount, p.pay_no, totalprice, cust_no
+		from payment p, ( select cafe_no, cafe_name, gp.pass_no, pass_content, amount, pay_no
+				from get_pass gp, 
+				( select c.cafe_no, cafe_name, pass_no, pass_content
+				from pass p, cafe c
+				where p.cafe_no=c.cafe_no and c.cafe_no=#{cafe_no} ) B
+				where gp.pass_no=B.pass_no ) C
+		where p.pay_no=C.pay_no ) D
+		where cust.cust_no= D.cust_no
+		order by pay_no desc ) E  )
+	</select>
+	
+	<select id="listCafePassSale" resultType="provallsalevo">
+		select pay_no,  cafe_name, product, totalprice, id
+		from ( select rownum n,  pay_no,  cafe_name, product, totalprice,  id
+		from ( select rownum n, pay_no,  cafe_name, CONCAT(CONCAT(pass_content, ' : '), amount) product, totalprice,  id
+			from customer cust, (select cafe_no, cafe_name, pass_no, pass_content, amount, p.pay_no, totalprice, cust_no
+			from payment p, ( select cafe_no, cafe_name, gp.pass_no, pass_content, amount, pay_no
+					from get_pass gp, 
+					( select c.cafe_no, cafe_name, pass_no, pass_content
+					from pass p, cafe c
+					where p.cafe_no=c.cafe_no and c.cafe_no=#{cafe_no} ) B
+					where gp.pass_no=B.pass_no ) C
+			where p.pay_no=C.pay_no ) D
+			where cust.cust_no= D.cust_no
+			order by pay_no desc ) E  )
+		where n between #{start} and #{end}
+	</select>
+
+	<select id="listProvAllSale" resultType="provallsalevo">
+		select pay_no, cafe_name, product , totalprice, id
+		from ( select rownum n, pay_no, cafe_name, product , totalprice, id
+		from  (select pay_no, cafe_name, product , totalprice, id
+				from (select pay_no, cafe_name, CONCAT(CONCAT(room_name, ' : '), reser_date) product , totalprice,   id
+					from customer cust, (select cafe_no, cafe_name, room_no, room_name, reser_date, p.pay_no,totalprice, cust_no
+								from payment p, ( select cafe_no, cafe_name, rr.room_no, room_name, reser_date, pay_no
+										from room_reser rr, 
+										( select r.cafe_no, cafe_name, room_no, room_name
+										from room r, ( select cafe_no, cafe_name
+												from provider p, cafe c
+												where p.provider_no=c.provider_no and p.provider_no=#{provider_no} ) A
+										where r.cafe_no=A.cafe_no  ) B
+										where rr.room_no=B.room_no ) C
+								where p.pay_no=C.pay_no ) D
+					where cust.cust_no= D.cust_no
+			
+					UNION
+				
+					select pay_no,  cafe_name, CONCAT(CONCAT(pass_content, ' : '), amount) product, totalprice,  id
+					from customer cust, (select cafe_no, cafe_name, pass_no, pass_content, amount, p.pay_no, totalprice, cust_no
+								from payment p, ( select cafe_no, cafe_name, gp.pass_no, pass_content, amount, pay_no
+										from get_pass gp, 
+										( select p.cafe_no, cafe_name, pass_no, pass_content
+										from pass p, ( select cafe_no, cafe_name
+												from provider p, cafe c
+												where p.provider_no=c.provider_no and p.provider_no=#{provider_no} ) A
+										where p.cafe_no=A.cafe_no  ) B
+										where gp.pass_no=B.pass_no ) C
+								where p.pay_no=C.pay_no ) D
+					where cust.cust_no= D.cust_no )
+				order by pay_no desc) 
+				
+			<if test="keyword!=null and keyword !='' ">
+				<choose>
+					<when test="searchColumn == 'totalprice'">
+						where ${searchColumn} ${oper} #{keyword} 
+					</when>
+					<otherwise>
+						where ${searchColumn} like '%' || #{keyword} || '%' 
+					</otherwise>
+				</choose>
+			</if>	
+
+			) where n between #{start} and #{end}
+			
+			
+	</select>
+
+	<select id="listMonthIncome" resultType="java.lang.Integer">
+		select r_total + p_total 
+		from ( select nvl(sum(totalprice),0)  r_total
+			from payment p, (select distinct(pay_no) pay_no
+							from  room_reser rr, ( select room_no from room
+												where cafe_no=#{cafe_no} ) A
+							where rr.room_no=A.room_no) B
+			where p.pay_no=B.pay_no and substr(p.pay_no,0,6) between #{startDate} and #{endDate}) p1, 
+			( select nvl(sum(totalprice),0) p_total
+			from payment p, (select distinct(pay_no) pay_no
+							from  get_pass gp, ( select pass_no from pass
+												where cafe_no=#{cafe_no} ) A
+							where gp.pass_no=A.pass_no) B
+			where p.pay_no=B.pay_no and substr(p.pay_no,0,6) between #{startDate} and #{endDate} ) p2 
+	</select>
+
+	<select id="getProvCafe" resultType="cafevo">
+		select * from provider p, cafe c
+		where p.provider_no=c.provider_no and p.provider_no=#{provider_no}
+	</select>
+	
+	<select id="detailCustomer" resultType="customervo">
+		select * from customer where cust_no=#{cust_no}
+	</select>
+	<select id="detailProvider" resultType="providervo">
+      select * from provider where provider_no=#{provider_no}
+   </select>
+	
+	<update id="updateCouponToTrue" parameterType="java.lang.String">
+		update evt_coupon set isused='true' where
+		coupon_no=#{coupon_no}
+	</update>
+
+	<select id="getNotUseCoupon" resultType="evtcoupondiscountvo">
+		select coupon_no,
+		discount, isused
+		from customer c, evt_coupon ec, evt e
+		where
+		ec.evt_no=e.evt_no and c.cust_no=ec.cust_no and isused='false'
+		and c.cust_no=#{cust_no}
+	</select>
+
+</mapper>

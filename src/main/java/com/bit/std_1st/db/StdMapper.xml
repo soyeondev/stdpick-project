@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="std">
+	<update id="updateStdHits">
+	update std set std_hits = std_hits+1 where std_no=#{std_no}
+	</update>
+	<select id="getStdHits" resultType="java.lang.Integer">
+		select STD_HITS from std where std_no = #{std_no}
+	</select>
+
+	<select id="getNextNo" resultType="java.lang.Integer">
+		select nvl(max(std_no),0)+1 from std
+	</select>
+	<insert id="insertStd">
+		insert into std values(
+		#{std_no},#{std_image},
+		#{std_name},#{std_intro},
+		#{std_start},#{std_end},
+		#{std_time},#{std_loc},
+		#{std_close},#{std_limit},
+		#{std_content},0,
+		#{founder_info},#{founder_no}
+		)
+	</insert>
+	<update id="updateStd">
+		update std set
+		std_name=#{std_name},std_intro=#{std_intro},std_image=#{std_image},
+		std_start=#{std_start},std_end=#{std_end},
+		std_time=#{std_time},std_loc=#{std_loc},
+		std_close=#{std_close},std_limit=#{std_limit},
+		std_content=#{std_content},std_hits=#{std_hits},
+		founder_info=#{founder_info},founder_no=#{founder_no}
+		where std_no=#{std_no}
+	</update>
+	<update id="updateHashTag">
+		update set hashtag set tag_no=#{tag_no}, tag_content=#{tag_content},
+		std_no=#{std_no}
+	</update>
+	<select id="getNextNo_ht" resultType="java.lang.Integer">
+		select nvl(max(tag_no),0)+1 from hashtag
+	</select>
+	<insert id="insertHashTag">
+		insert into hashtag values(#{tag_no},#{tag_content},#{std_no})
+	</insert>
+	<select id="getNextNoApply" resultType="java.lang.Integer">
+		select nvl(max(apply_no),0)+1 from std_apply
+	</select>
+	<insert id="insertStdApply">
+		insert into std_apply
+		values(#{apply_no},#{cust_no},#{std_no},#{apply_content}, 'false')
+	</insert>
+	<select id="allStd" resultType="stdvo">
+		select s.std_no, s.std_image, s.std_name, TO_CHAR(s.std_start,'YYYY-MM-DD')
+		std_start,TO_CHAR(s.std_end,'YYYY-MM-DD') std_end, s.std_time,
+		s.std_loc, TO_CHAR(s.std_close,'YYYY-MM-DD') std_close, s.std_limit,
+		s.founder_no
+		from std s, std_apply a
+		where a.std_no=s.std_no
+		and cust_no=#{cust_no}
+		order
+		by s.std_no
+	</select>
+	<select id="watingStd" resultType="stdvo">
+		select s.std_no, s.std_image, s.std_name, TO_CHAR(s.std_start,'YYYY-MM-DD')
+		std_start,TO_CHAR(s.std_end,'YYYY-MM-DD') std_end, s.std_time,
+		s.std_loc, TO_CHAR(s.std_close,'YYYY-MM-DD') std_close, s.std_limit,
+		s.founder_no, a.std_aprv
+		from std s, std_apply a
+		where s.std_no=a.std_no
+		and std_start >= sysdate
+		and std_aprv='false'
+		and a.cust_no=#{cust_no}
+		order by s.std_no
+	</select>
+	<select id="ingStd" resultType="stdvo">
+		select s.std_no, s.std_image, s.std_name, TO_CHAR(s.std_start,'YYYY-MM-DD')
+		std_start,TO_CHAR(s.std_end,'YYYY-MM-DD') std_end, s.std_time,
+		s.std_loc, TO_CHAR(s.std_close,'YYYY-MM-DD') std_close, s.std_limit,
+		s.founder_no
+		from std s, std_apply a
+		where s.std_no=a.std_no
+		and sysdate >= std_start
+		and std_end >= sysdate
+		and std_aprv='true'
+		and a.cust_no=#{cust_no}
+		order by s.std_no
+	</select>
+	<select id="endStd" resultType="stdvo">
+		select s.std_no, s.std_image, s.std_name, TO_CHAR(s.std_start,'YYYY-MM-DD')
+		std_start,TO_CHAR(s.std_end,'YYYY-MM-DD') std_end, s.std_time,
+		s.std_loc, TO_CHAR(s.std_close,'YYYY-MM-DD') std_close, s.std_limit,
+		s.founder_no
+		from std s, std_apply a
+		where s.std_no=a.std_no
+		and sysdate >= std_end
+		and std_aprv='true'
+		and a.cust_no=#{cust_no}
+		order by s.std_no
+	</select>
+	<select id="myStd" resultType="stdvo">
+		select std_no, std_image,
+		std_name, TO_CHAR(std_start,'YYYY-MM-DD')
+		std_start,TO_CHAR(std_end,'YYYY-MM-DD') std_end, std_time, std_loc,
+		TO_CHAR(std_close,'YYYY-MM-DD') std_close, std_limit, founder_no
+		from std
+		where founder_no=1
+	</select>
+	<select id="getIngPicker" resultType="custaplyvo">
+		select s.std_no, c.cust_no,
+		c.cust_name, c.phone, c.addr, c.email, a.apply_no
+		from std s, std_apply a, customer c
+		where s.std_no = a.std_no
+		and a.cust_no = c.cust_no
+		and a.std_aprv='true'
+		and a.std_no=#{std_no}
+		order by a.apply_no
+	</select>
+
+	<select id="getWtgPicker" resultType="custaplyvo">
+		select s.std_no, c.cust_no,
+		c.cust_name, c.phone, c.addr, c.email, a.apply_no
+		from std s, std_apply a, customer c
+		where s.std_no = a.std_no
+		and a.cust_no = c.cust_no
+		and a.std_aprv='false'
+		and a.std_no=#{std_no}
+		order by a.apply_no
+	</select>
+	<select id="confStd" resultType="custaplyvo">
+		select c.cust_name, c.phone, c.addr, a.apply_content, a.apply_no
+		from
+		customer c, std_apply a
+		where c.cust_no=a.cust_no
+		and a.cust_no=#{cust_no}
+		and a.apply_no=#{apply_no}
+	</select>
+	<update id="updateAplyWtg">
+		update std_apply set std_aprv='true' where apply_no=#{apply_no}
+	</update>
+	<delete id="deleteAply">
+		delete std_apply where apply_no=#{apply_no}
+	</delete>
+	<select id="getHashTag" resultType="hashtagvo">
+		select * from hashtag where std_no=#{std_no}
+	</select>
+	<delete id="deleteHashTag">
+		delete hashtag where std_no=#{std_no}
+	</delete>
+
+	<!--한별코드 -->
+	
+	  <select id="listStd" resultType="stdvo">
+      select std_no, std_image,
+      std_name, std_intro,
+      std_start,std_end,
+      std_time, std_loc,
+      std_close, std_limit, std_content,
+      std_hits, 
+      founder_info, founder_no, (select count(*) from std_apply a where std_aprv = 'true' and a.std_no = s.std_no) picker_count 
+      from (select rownum n, std_no, std_image,
+      std_name, std_intro,
+      std_start,std_end, std_time, std_loc,
+      std_close,
+      std_limit,
+      std_content,
+      std_hits, founder_info, founder_no
+      from
+      (select
+      std_no, std_image,
+      std_name, std_intro,
+      TO_CHAR(std_start,'YYYY-MM-DD')
+      std_start,
+      TO_CHAR(std_end,'YYYY-MM-DD') std_end, std_time, std_loc,
+      TO_CHAR(std_close,'YYYY-MM-DD') std_close, std_limit, std_content,
+      std_hits, founder_info, founder_no
+      from std
+      <if test="keyword != null and keyword != ''">
+         <if test="local == null or local =='' ">
+            where std_name like '%'||#{keyword}||'%'  or std_no in
+            (select std_no from hashtag where tag_content like
+            '%'||#{keyword}||'%')
+         </if>
+         <if test="local != null and local!='' ">
+            where (std_name like '%'||#{keyword}||'%'  or std_no in
+            (select std_no from hashtag where tag_content like
+            '%'||#{keyword}||'%')) and std_loc like '%'||#{local}||'%'
+         </if>
+      </if>
+      <if test="keyword == null or keyword == ''">
+         <if test="local != nul and local!= ''">
+            where std_loc like '%'||#{local}||'%'
+         </if>
+      </if>
+      order by std_no desc )) s
+      where s.n between #{start} and #{end}
+   </select>
+	
+	<select resultType="stdvo" id="getStd">
+		select std_no, std_image,std_name,
+			std_intro,TO_CHAR(std_start,'YYYY-MM-DD') std_start,TO_CHAR(std_end,'YYYY-MM-DD') std_end, std_time,
+			std_loc, TO_CHAR(std_close,'YYYY-MM-DD') std_close, std_limit,
+			std_content, std_hits, founder_info, founder_no from std 
+			where std_no=#{std_no} 
+	</select>
+
+
+	<select resultType="java.lang.Integer" id="getCountStd">
+		select count(*) from std
+		<if test="keyword != null and keyword != ''">
+			<if test="local == null or local =='' ">
+				where std_name like '%'||#{keyword}||'%' or std_no in (select std_no from hashtag where tag_content like'%'||#{keyword}||'%') 
+			</if>
+			<if test="local != null and local!='' ">
+				where (std_name like '%'||#{keyword}||'%' or std_no in (select std_no from hashtag where tag_content like'%'||#{keyword}||'%')) and std_loc like '%'||#{local}||'%' </if>
+		</if>
+		<if test="keyword == null or keyword == ''">
+			<if test="local != nul and local!= ''">
+				where std_loc like '%'||#{local}||'%' 
+			</if>
+		</if>
+
+	</select>
+
+
+</mapper>

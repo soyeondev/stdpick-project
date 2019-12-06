@@ -1,0 +1,15 @@
+Ch 05. API는 무엇인가
+	1. Authentication & Authorization
+	- Authentication: Identity(정체)가 맞다는 증명
+	- Authorization: API를 통한 어떠한 액션을 허용
+
+	2. API의 필수, 시큐리티
+	- delete 리퀘스트를 통해 다른 이용자의 정보를 지울수도 있음
+	- 제 3자에게 데이터 유출로 이어질 수 있음
+	- 누가 API를 사용하는지, 어떤 정보를 가져가는지 트래킹 할수없음
+	
+	3. API key란 무엇인가?
+	- API key란 보통 Request URL 혹은 Request 헤더에 포함되는 긴 스트링
+		: 접근권한이 있는 것을 증명하기 위해 API key를 사용
+	
+	4. 

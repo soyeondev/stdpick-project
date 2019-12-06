@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cafe">
+<select id="getCafeIMGS" resultType="cafeimgvo">
+	select * from cafe_img where cafe_no = ${cafe_no}
+</select>
+
+
+<select id="getNextNo_cafe" resultType="java.lang.Integer">
+		select nvl(max(cafe_no),
+		0)+1 from cafe
+	</select>
+	<insert id="insertCafe">
+insert into cafe values(#{cafe_no}, #{license_num},
+		#{main_img}, #{cafe_name},
+		#{cafe_info}, #{cafe_loc}, #{cafe_phone},
+		#{cafe_hrs}, #{cafe_notice},
+		#{cafe_policy}, #{seats},
+		#{provider_no}, #{room_price}, ${pass_price}, #{cafe_facil}, #{cafe_info_detail})
+	</insert>
+
+	<!-- cafe_img -->
+	<select id="getNextNo_cafe_img" resultType="java.lang.Integer">
+		select
+		nvl(max(cafe_img_no), 0)+1 from cafe_img
+	</select>
+	<insert id="insert_cafe_img">
+		insert into cafe_img values(#{cafe_img_no},
+		#{cafe_img_name},
+		#{cafe_no})
+	</insert>
+
+	<!-- cafe_chkbox -->
+	<select id="getNextNo_cafe_chkbox"
+		resultType="java.lang.Integer">
+		select nvl(max(cafe_chkbox_no), 0)+1 from cafe_chkbox
+	</select>
+	<insert id="insert_cafe_chkbox">
+		insert into cafe_chkbox values(#{cafe_chkbox_no},
+		#{cafe_chkbox_name},#{cafe_no})
+	</insert>
+
+	<!-- pass -->
+	<select id="getNextNo_pass" resultType="java.lang.Integer">
+		select nvl(max(pass_no),
+		0)+1 from pass
+	</select>
+	<insert id="insert_pass">
+		insert into pass values(#{pass_no}, #{pass_content},
+		#{price}, #{cafe_no})
+	</insert>
+
+	<!-- room -->
+	<select id="getNextNo_room" resultType="java.lang.Integer">
+		select nvl(max(room_no),
+		0)+1 from room
+	</select>
+	<insert id="insert_room">
+		insert into room values(#{room_no}, #{room_name},
+		#{cafe_no})
+	</insert>
+
+	<!-- room_time -->
+	<select id="getNextNo_room_time" resultType="java.lang.Integer">
+		select
+		nvl(max(time_no), 0)+1 from room_time
+	</select>
+	<insert id="insert_room_time">
+		insert into room_time values(#{time_no},
+		#{start_time}, #{end_time},
+		#{time_price}, #{room_no})
+	</insert>
+
+	<!-- 개마페 카페 시작 -->
+	<!-- 카페 전체 -->
+	<select id="cnt_all_mypage" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM
+		room_reser rr,
+		room r,
+		cafe c
+		WHERE rr.room_no = r.room_no
+		AND r.cafe_no =
+		c.cafe_no
+		AND rr.pay_no
+		IN
+		(SELECT pay_no
+		FROM payment
+		WHERE cust_no =
+		#{cust_no}		
+		)
+		ORDER BY rr.reser_no
+	</select>
+	<select id="all_mypage" resultType="mpcafevo">
+		SELECT rr.reser_no
+		mp_reser_no,
+		rr.reser_date mp_reser_date ,
+		rr.reser_start
+		mp_reser_start,
+		rr.reser_time mp_reser_time,
+		rr.user_num mp_user_num,
+		r.room_name mp_room_name,
+		c.cafe_name mp_cafe_name,
+		c.cafe_loc
+		mp_cafe_loc
+		FROM room_reser rr,
+		room r,
+		cafe c
+		WHERE rr.room_no =
+		r.room_no
+		AND r.cafe_no = c.cafe_no
+		AND rr.pay_no
+		IN
+		(SELECT pay_no
+		FROM
+		payment
+		WHERE cust_no =
+		#{cust_no}
+		)
+		ORDER BY rr.reser_no
+	</select>
+	<!--카페 예약 후 이용전 목록 -->
+	<select id="cnt_reserved_mypage" resultType="java.lang.Integer">
+		SELECT count(*)
+		FROM room_reser rr,
+		room r,
+		cafe c
+		WHERE rr.room_no =
+		r.room_no
+		AND r.cafe_no = c.cafe_no
+		and
+		rr.reser_date <![CDATA[>]]>
+		sysdate
+		AND rr.pay_no IN
+		(SELECT pay_no
+		FROM payment
+		WHERE cust_no =
+		#{cust_no}
+		)
+	</select>
+	<select id="reserved_mypage" resultType="mpcafevo">
+		SELECT rr.reser_no mp_reser_no,
+		rr.reser_date mp_reser_date ,
+		rr.reser_start mp_reser_start,
+		rr.reser_time mp_reser_time,
+		rr.user_num
+		mp_user_num,
+		r.room_name mp_room_name,
+		c.cafe_name mp_cafe_name,
+		c.cafe_loc mp_cafe_loc
+		FROM room_reser rr,
+		room r,
+		cafe c
+		WHERE rr.room_no
+		= r.room_no
+		AND r.cafe_no = c.cafe_no
+		AND
+		rr.reser_date <![CDATA[>]]>
+		sysdate
+		AND rr.pay_no IN
+		(SELECT pay_no
+		FROM payment
+		WHERE cust_no =
+		#{cust_no}
+		)
+		ORDER BY rr.reser_no
+	</select>
+	<!--카페 예약 후 이용후(기간만료)목록 -->
+	<select id="cnt_used_mypage" resultType="java.lang.Integer">
+		SELECT count(*)
+		FROM room_reser rr,
+		room r,
+		cafe c
+		WHERE rr.room_no =
+		r.room_no
+		AND r.cafe_no = c.cafe_no
+		and
+		rr.reser_date <![CDATA[<]]>
+		sysdate
+		AND rr.pay_no IN
+		(SELECT pay_no
+		FROM payment
+		WHERE cust_no =
+		#{cust_no}
+		)
+	</select>
+	<select id="used_mypage" resultType="mpcafevo">
+		SELECT rr.reser_no mp_reser_no,
+		rr.reser_date mp_reser_date ,
+		rr.reser_start mp_reser_start,
+		rr.reser_time mp_reser_time,
+		rr.user_num
+		mp_user_num,
+		r.room_name mp_room_name,
+		c.cafe_name mp_cafe_name,
+		c.cafe_loc mp_cafe_loc
+		FROM room_reser rr,
+		room r,
+		cafe c
+		WHERE rr.room_no
+		= r.room_no
+		AND r.cafe_no = c.cafe_no
+		AND
+		rr.reser_date <![CDATA[<]]>
+		sysdate
+		AND rr.pay_no IN
+		(SELECT pay_no
+		FROM payment
+		WHERE cust_no =
+		#{cust_no}
+		)
+		ORDER BY rr.reser_no
+	</select>
+	
+	<select id="getReserCount" resultType="resercountvo">
+		select reser_date, count(*) reser_count
+		from room_reser rr, 
+			( select room_no from room r, cafe c
+			where r.cafe_no=c.cafe_no and c.cafe_no=#{cafe_no} ) B
+		where rr.room_no=B.room_no group by reser_date
+	</select>
+
+	<select id="detailCafe" resultType="cafevo">
+		select * from cafe where cafe_no=#{cafe_no}
+	</select>
+
+	<insert id="insertGetPass" parameterType="getpassvo">
+		insert into get_pass values (#{get_pass_no},#{pass_no},
+		#{pay_no},#{amount} )
+	</insert>
+
+	<select id="getNextGetPassNo" resultType="java.lang.Integer">
+		select nvl(max(get_pass_no),0)+1 from get_pass
+	</select>
+
+	<select id="detailPass" resultType="passvo">
+		select * from pass where pass_no=#{pass_no}
+	</select>
+
+	<insert id="insertRoomReser" parameterType="roomreservo">
+		insert into room_reser values (#{reser_no},#{room_no},
+		#{reser_date},#{reser_start}, #{reser_time}, #{user_num}, #{pay_no} )
+	</insert>
+	
+	<insert id="insertPayment" parameterType="paymentvo">
+		insert into payment values (#{pay_no}, #{pay_name}, #{totalprice}, #{coupon_no}, #{cust_no} )
+	</insert>
+
+	<select id="getNextReserNo" resultType="java.lang.Integer">
+		select nvl(max(reser_no),0)+1 from room_reser
+	</select>
+	
+	<select id="getNextPayNo" resultType="java.lang.String">
+		select nvl(max(pay_no),0)+1 from payment
+	</select>
+
+	<select id="getRoomReser" resultType="roomreservo">
+		select reser_no, room_no, reser_date, reser_start, reser_time, user_num, p.pay_no, room_name, id
+		from payment p, customer c, (  select reser_no, rr.room_no, reser_date, reser_start, reser_time, user_num, pay_no, room_name
+						from room_reser rr, 
+		    				( select room_no, room_name from room r, cafe c
+						where r.cafe_no=c.cafe_no and c.cafe_no= #{cafe_no} ) a
+						where rr.room_no=a.room_no and reser_date= #{reser_date}  ) b
+		where p.pay_no=b.pay_no and p.cust_no=c.cust_no
+	
+	</select>
+
+	<select id="getRoom" resultType="roomvo">
+		select * from room where cafe_no
+		= #{cafe_no}
+	</select>
+	<select id="getRoomTime" resultType="roomtimevo">
+		select rt.* from room_time
+		rt, room r
+		where rt.room_no=r.room_no and r.room_no=#{room_no}
+	</select>
+
+  <select id="listCafeAll" resultType="cafevo">
+   select * from (select rownum numrow, cafe.* from cafe) Where numrow >= #{start} and numrow <![CDATA[<]]>= #{end} 
+  </select>
+  
+  <select id="printStar" resultType="starvo">
+    select avg(grade)avg,count(*)count from cafe_review where cafe_no = #{cafeno}
+  </select>
+  
+  <select id="gradeSort" resultType="cafevo">
+  	select * from (
+	select rownum numrow, gc.* from (select cafe_no,cafe_name,LICENSE_NUM,MAIN_IMG,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE
+	from (select cafe.cafe_no cafe_no,cafe.cafe_name cafe_name,LICENSE_NUM,MAIN_IMG,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE,nvl(avg,0)avg 
+	from cafe left outer join(select cafe_no,avg from (select avg(grade)avg,cafe_no from 
+	cafe_review group by cafe_no order by avg desc))a on
+	cafe.cafe_no = a.cafe_no
+	and cafe.cafe_no in 
+	( select cafe_no from (select avg(grade)avg,cafe_no from cafe_review group by cafe_no order by avg desc) ) order by avg desc) )gc 
+	<if test="cafe_loc != null">
+		where cafe_loc like '%${cafe_loc}%'
+	</if>
+	<if test="keyword != null">
+	 and cafe_name like '%${keyword}%'
+	</if>
+	 ) Where numrow >= #{start} and numrow <![CDATA[<]]>= #{end}
+  </select>
+  
+  <select id="gradeCount" resultType="string">
+	select count(*) from (
+	select rownum numrow, gc.* from (select cafe_no,cafe_name,LICENSE_NUM,MAIN_IMG,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE
+	from (select cafe.cafe_no cafe_no,cafe.cafe_name cafe_name,LICENSE_NUM,MAIN_IMG,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE,nvl(avg,0)avg 
+	from cafe left outer join(select cafe_no,avg from (select avg(grade)avg,cafe_no from 
+	cafe_review group by cafe_no order by avg desc))a on
+	cafe.cafe_no = a.cafe_no
+	and cafe.cafe_no in 
+	( select cafe_no from (select avg(grade)avg,cafe_no from cafe_review group by cafe_no order by avg desc) ) order by avg desc) )gc 
+	<if test="cafe_loc != null">
+		where cafe_loc like '%${cafe_loc}%'
+	</if>
+	<if test="keyword != null">
+	 and cafe_name like '%${keyword}%'
+	</if>
+	 ) Where numrow >= #{start} and numrow <![CDATA[<]]>= #{end} 
+  </select>
+  
+  <select id="sellCount" resultType="string">
+  	select * from (
+	select rownum numrow,sc.* from (
+	select a.* from cafe a full outer join (
+	select nvl(r_cnt+p_cnt,p_cnt)cnt,p2.* from (
+	select nvl(count(*),0)r_cnt,cafe_no,LICENSE_NUM,MAIN_IMG,CAFE_NAME,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE from ( 
+	select * from room_reser,( select room.room_no,cafe.cafe_no,LICENSE_NUM,MAIN_IMG,CAFE_NAME,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE
+	from room,cafe where room.cafe_no = cafe.cafe_no  )A where
+	room_reser.room_no = A.room_no  ) group by cafe_no,LICENSE_NUM,MAIN_IMG,CAFE_NAME,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE 
+	)p1 full outer join ( 
+	select nvl(count(*),0)p_cnt,cafe_no,LICENSE_NUM,MAIN_IMG,CAFE_NAME,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE from ( 
+	select * from get_pass,( select pass.pass_no,cafe.cafe_no,LICENSE_NUM,MAIN_IMG,CAFE_NAME,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE
+	from pass,cafe where pass.cafe_no = cafe.cafe_no  )A where
+	get_pass.pass_no = A.pass_no  ) group by cafe_no,LICENSE_NUM,MAIN_IMG,CAFE_NAME,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE )p2 on p1.cafe_no = p2.cafe_no order by cnt desc
+	)Z on a.cafe_no = Z.cafe_no )sc 
+	<if test="cafe_loc != null">
+		where cafe_loc like '%${cafe_loc}%'
+	</if>
+	<if test="keyword != null">
+	 and cafe_name like '%${keyword}%'
+	</if>
+	 ) Where numrow >= #{start} and numrow <![CDATA[<]]>= #{end}
+  </select>  
+  
+  <select id="sellSort" resultType="cafevo">
+  	select * from (
+	select rownum numrow,sc.* from (
+	select a.* from cafe a full outer join (
+	select nvl(r_cnt+p_cnt,p_cnt)cnt,p2.* from (
+	select nvl(count(*),0)r_cnt,cafe_no,LICENSE_NUM,MAIN_IMG,CAFE_NAME,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE from ( 
+	select * from room_reser,( select room.room_no,cafe.cafe_no,LICENSE_NUM,MAIN_IMG,CAFE_NAME,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE
+	from room,cafe where room.cafe_no = cafe.cafe_no  )A where
+	room_reser.room_no = A.room_no  ) group by cafe_no,LICENSE_NUM,MAIN_IMG,CAFE_NAME,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE 
+	)p1 full outer join ( 
+	select nvl(count(*),0)p_cnt,cafe_no,LICENSE_NUM,MAIN_IMG,CAFE_NAME,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE from ( 
+	select * from get_pass,( select pass.pass_no,cafe.cafe_no,LICENSE_NUM,MAIN_IMG,CAFE_NAME,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE
+	from pass,cafe where pass.cafe_no = cafe.cafe_no  )A where
+	get_pass.pass_no = A.pass_no  ) group by cafe_no,LICENSE_NUM,MAIN_IMG,CAFE_NAME,CAFE_INFO,CAFE_LOC,CAFE_PHONE,CAFE_HRS,CAFE_NOTICE,SEATS,PROVIDER_NO,ROOM_PRICE,PASS_PRICE )p2 on p1.cafe_no = p2.cafe_no order by cnt desc
+	)Z on a.cafe_no = Z.cafe_no )sc 
+	<if test="cafe_loc != null">
+		where cafe_loc like '%${cafe_loc}%'
+	</if>
+	<if test="keyword != null">
+	 and cafe_name like '%${keyword}%'
+	</if>
+	 )  Where numrow >= #{start} and numrow <![CDATA[<]]>= #{end}
+	 
+	
+	
+  </select>
+  
+  <select id="roomPriceSort" resultType="cafevo">
+  	select * from (Select rownum numrow, rc.* from (select aa.* from (select * from cafe order by room_price ) aa )rc 
+  	<if test="cafe_loc != null">
+		where cafe_loc like '%${cafe_loc}%'
+	</if>
+	<if test="keyword != null">
+	 and cafe_name like '%${keyword}%'
+	</if>
+	 )  Where numrow >= #{start} and numrow <![CDATA[<]]>= #{end}
+  </select>
+  
+  <select id="roomCount" resultType="string">
+  		select count(*) from (Select rownum numrow, rc.* from (select aa.* from (select * from cafe order by room_price ) aa )rc 
+  	<if test="cafe_loc != null">
+		where cafe_loc like '%${cafe_loc}%'
+	</if>
+	<if test="keyword != null">
+	 and cafe_name like '%${keyword}%'
+	</if>
+	 )  Where numrow >= #{start} and numrow <![CDATA[<]]>= #{end}
+  </select>
+  
+  <select id="passPriceSort" resultType="cafevo">
+  	select * from (Select rownum numrow, rc.* from (select aa.* from (select * from cafe order by pass_price ) aa )rc 
+  	<if test="cafe_loc != null">
+		where cafe_loc like '%${cafe_loc}%'
+	</if>
+	<if test="keyword != null">
+	 and cafe_name like '%${keyword}%'
+	</if>
+	 )  Where numrow >= #{start} and numrow <![CDATA[<]]>= #{end}
+  </select>
+  
+  <select id="passCount" resultType="string">
+  	  select count(*) from (Select rownum numrow, rc.* from (select aa.* from (select * from cafe order by pass_price ) aa )rc 
+  	<if test="cafe_loc != null">
+		where cafe_loc like '%${cafe_loc}%'
+	</if>
+	<if test="keyword != null">
+	 and cafe_name like '%${keyword}%'
+	</if>
+	 )  Where numrow >= #{start} and numrow <![CDATA[<]]>= #{end}
+  </select>
+  
+  <select id="searchCafe" resultType="cafevo">
+	select * from( select rownum numrow,cafe.* from cafe where cafe_loc like '%${cafe_loc}%'
+    <if test="keyword != null">
+        and cafe_name like '%${keyword}%' )
+    </if>
+    Where numrow >= #{start} and numrow <![CDATA[<]]>= #{end}
+  </select>
+  
+  <select id="totalCount" resultType="string">
+  	select count(*) from cafe
+  </select>
+
+  <select id="cafeDetail" resultType="cafevo">
+  	select * from cafe where cafe_no = ${cafe_no}
+  </select>
+	
+	<select id="passList" resultType="passvo">
+		select * from pass where cafe_no = ${cafe_no}
+	</select>
+	
+	<select id="inqList" resultType="inqvo">
+		select rownum,a.* from (select cust_nick,cust_img,cafe_inq.* from cafe_inq,customer where customer.cust_no = cafe_inq.cust_no and cafe_no = ${cafe_no} order by inq_no desc)a where rownum>=1 and rownum<![CDATA[<]]>=5
+	</select>
+	
+	<select id="inqAllList" resultType="inqvo">
+		select * from (select rownum numrow,a.* from (select cust_nick,cust_img,cafe_inq.* from cafe_inq,customer where customer.cust_no = cafe_inq.cust_no and cafe_no = ${cafe_no} order by inq_no desc)a) where numrow >= ${start} and numrow<![CDATA[<]]>=${end}
+	
+	
+	</select>
+
+	<select id="inqCount" resultType="string">
+		select count(*) from cafe_inq where cafe_no = ${cafe_no}
+	</select>
+	
+	<insert id="insertInq">
+		insert into cafe_inq values( (select nvl(max(inq_no)+1,0) from cafe_inq), ${cafe_no},'${content}',null,'${issecret}',${cust_no})
+	</insert>
+	
+	<update id="updateInq">
+		update cafe_inq set inq_reply = '${text}' where inq_no = ${inq_no}
+	</update>
+	
+	<select id="reviewList" resultType="reivewvo">
+		select * from(select rownum numrow,b.*,(select cust_img from customer where cust_no = b.cust_no)cust_img,(select cust_nick from customer where cust_no = b.cust_no)cust_name from (select a.* from (select * from cafe_review where cafe_no =  ${cafe_no} )a 
+        order by a.review_no desc)b 
+		order by numrow) where numrow >=${start} and numrow<![CDATA[<]]>=${end}
+		
+		
+	
+		<!-- select * from(select rownum numrow,b.*,(select cust_img from customer where cust_no = b.cust_no)cust_img,(select cust_nick from customer where cust_no = b.cust_no)cust_name from (select review_img,a.* from (select * from cafe_review where cafe_no = ${cafe_no} )a left outer join 
+		cafe_review_image on a.review_no = cafe_review_image.review_no order by a.review_no desc)b 
+		order by numrow) where numrow >=${start} and numrow<![CDATA[<]]>=${end} -->
+		
+	</select>
+	
+	<!-- <select id="reviewList1st" resultType="reivewvo">
+	
+		select * from(select rownum numrow,b.*,(select cust_img from customer where cust_no = b.cust_no)cust_img,(select cust_nick from customer where cust_no = b.cust_no)cust_name from (select a.* from (select * from cafe_review where cafe_no =  ${cafe_no} )a 
+        order by a.review_no desc)b 
+		order by numrow) where numrow >=1 and numrow<![CDATA[<]]>=5
+		
+		select * from(select rownum numrow,b.*,(select cust_img from customer where cust_no = b.cust_no)cust_img,(select cust_nick from customer where cust_no = b.cust_no)cust_name from (select review_img,a.* from (select * from cafe_review where cafe_no = ${cafe_no} )a left outer join 
+		cafe_review_image on a.review_no = cafe_review_image.review_no order by a.review_no desc)b 
+		order by numrow) where numrow >=1 and numrow<![CDATA[<]]>=5
+	</select>
+	 -->
+	<select id="getReviewImg" resultType="reviewimgvo">
+		select * from cafe_review_image where review_no = ${review_no}
+	</select>
+	
+	<select id="reviewCount" resultType="string">
+		select count(*) from cafe_review where cafe_no = ${cafe_no}
+	</select>
+	
+	<insert id="insertReview">
+		insert into cafe_review values((select nvl(max(review_no)+1,0) from cafe_review),'${review_content}',${grade},${cafe_no},${cust_no},null)
+	</insert>
+	
+	<update id="updateReview">
+		update cafe_review set review_reply = '${text}' where review_no = ${review_no}
+	</update>
+
+	<select id="getCustomer" resultType="custvo">
+		select * from customer where cust_no = ${cust_no}
+	</select>
+	
+	<select id="getTotalAvg" resultType="reviewavg">
+		select round(avg(grade),2)avg ,count(grade)total
+		from cafe_review where cafe_no = ${cafe_no}
+	</select>
+	
+	<select id="getGradeCnt" resultType="reviewcount">
+		select grade,count(*)cnt from cafe_review where cafe_no = ${cafe_no} group by grade order by grade desc
+	</select>
+  
+  	<insert id="inserCafeReviewIMG">
+  		insert into cafe_review_image values((select nvl(max(REVIEW_IMG_NO)+1,0) from cafe_review_image),'${fname}',(select max(review_no) from cafe_review))
+  	</insert>
+  	
+  	<select id="getChkBox" resultType="cafechkbox">
+  		select * from cafe_chkbox where cafe_no = ${cafe_no}
+  	</select>
+  
+  
+</mapper>
