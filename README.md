@@ -1,4 +1,4 @@
-## STDPICK[ (프로젝트 자세히 보기)](https://github.com/soyeondev/stdpick_project/blob/master/stdpick_project.pdf)
+## STDPICK[ (프로젝트 소개 PDF)](https://github.com/soyeondev/stdpick_project/blob/master/stdpick_project.pdf)
 **스터디카페 실시간 예약과 스터디모임 개설 및 모집을 중계해주는 모임 플랫폼 웹 어플리케이션**  
 - 2019년 비트캠프 자바개발자 양성과정 팀 프로젝트
 - 인원: 6명
@@ -24,7 +24,7 @@
  - 추천맛집에 대한 정보를 열람하기 위한 블로그 웹크롤링 기능
  - 웹사이트 이용자를 위한 SNS 기능(팔로잉, 팔로워, 게시글 등록 및 검색)
 
-## 담당 파트(*기능은 ppt 참고*)
+## 담당 파트
 - 맛집페이지 [jsp](https://github.com/soyeondev/stdpick_project/blob/master/src/main/webapp/WEB-INF/views/diningSch.jsp), [Controller](https://github.com/soyeondev/stdpick_project/blob/master/src/main/java/com/bit/std_1st/controller/DiningController.java)
 - 개인마이페이지 [jsp](https://github.com/soyeondev/stdpick_project/blob/master/src/main/webapp/WEB-INF/views/custMyPage.jsp),  [Controller](https://github.com/soyeondev/stdpick_project/blob/master/src/main/java/com/bit/std_1st/controller/MPController.java)
 - 스터디모임 개설페이지 [jsp](https://github.com/soyeondev/stdpick_project/blob/master/src/main/webapp/WEB-INF/views/insertStd.jsp),  [Controller](https://github.com/soyeondev/stdpick_project/blob/master/src/main/java/com/bit/std_1st/controller/StdController.java)
