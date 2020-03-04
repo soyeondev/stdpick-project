@@ -107,16 +107,12 @@ public class CafeController {
 		return re;
 	}
 
-	// [移댄럹�벑濡�] �뙆�씪�뾽濡쒕뱶
 	@ResponseBody
 	@RequestMapping(value = "/upload.do", method = RequestMethod.POST)
 	public String requestupload2(MultipartHttpServletRequest mtfRequest) {
-		// FnameList.clear(); �삤瑜섎궓
 
 		List<MultipartFile> fileList = mtfRequest.getFiles("file");
 		String src = mtfRequest.getParameter("src");
-		System.out.println("src value : " + src);
-		System.out.println("fileList:" + fileList);
 
 		String path = "/cafe_img/";
 
@@ -125,16 +121,10 @@ public class CafeController {
 			long fileSize = mf.getSize(); // �뙆�씪 �궗�씠利�
 			String real = mtfRequest.getRealPath(path);
 
-			System.out.println("originFileName : " + originFileName);
-			System.out.println("fileSize : " + fileSize);
-			System.out.println("real : " + real);
-
 			String safeFile = real + System.currentTimeMillis() + originFileName;
 			String fname = safeFile;
 			fname = fname.substring(real.length());
 			FnameList.add(fname);
-			System.out.println("fname : " + fname);
-			System.out.println("safeFile" + safeFile);
 			try {
 				mf.transferTo(new File(safeFile));
 			} catch (IllegalStateException e) {
@@ -153,13 +143,8 @@ public class CafeController {
 		String ThirdIMG = FnameList.get(2);
 		String FourthIMG = FnameList.get(3);
 
-		System.out.println("泥ル쾲夷� �씠誘몄� : " + firstIMG);
 		System.out.println("--------------------------");
-		System.out.println("�몢踰덉�� �씠誘몄� : " + SecondIMG);
-		System.out.println("�꽭踰덉�� �씠誘몄� : " + ThirdIMG);
-		System.out.println("�꽕踰덉�� �씠誘몄� : " + FourthIMG);
 
-		System.out.println(FnameList);
 		return "redirect:/requestupload2";
 	}
 
@@ -174,15 +159,10 @@ public class CafeController {
 	public String insertCafeSubmit(CafeVo c, HttpSession session) {
 		String re = "";
 
-		System.out.println("vo�꽭�똿 �쟾:" + c.toString());
-		// null媛믪씤 �븷�뱾
-		// cafe_no, main_img
-
 		cafe_no = cafedao.getNextNo_cafe();
 		c.setCafe_no(cafe_no);
 	
 		c.setMain_img(FnameList.get(0));
-		System.out.println("vo�꽭�똿 �썑:" + c.toString());
 		
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -197,8 +177,6 @@ public class CafeController {
 			} else {
 				re = "insertCafe";
 			}
-			System.out.println("rere �썑:" + re);
-			System.out.println("insertCafe �셿猷�!");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -223,10 +201,9 @@ public class CafeController {
 
 				ObjectMapper mapper = new ObjectMapper();
 				re = mapper.writeValueAsString(cafedao.insert_cafe_chkbox(ch));
-				System.out.println("chkboxVO: "+ch);
 
 			}
-			System.out.println("insert_cafe_chkbox �셿猷�!");
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -247,11 +224,9 @@ public class CafeController {
 				i.setCafe_img_name(FnameList.get(j));
 				i.setCafe_no(cafe_no);
 				
-				System.out.println("imgVO: "+i);
 				ObjectMapper mapper = new ObjectMapper();
 				re = mapper.writeValueAsString(cafedao.insert_cafe_img(i));
 			}
-			System.out.println("insert_cafe_img �셿猷�!");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -274,7 +249,6 @@ public class CafeController {
 				p.setPrice(price[i]);
 				p.setCafe_no(cafe_no);
 
-				System.out.println("passVO: "+p);
 				ObjectMapper mapper = new ObjectMapper();
 				re = mapper.writeValueAsString(cafedao.insert_pass(p));				
 			}
@@ -301,7 +275,6 @@ public class CafeController {
 				r.setRoom_name(room_name[i]);
 				r.setCafe_no(cafe_no);
 
-				System.out.println("roomVO: "+r);
 				ObjectMapper mapper = new ObjectMapper();
 				re = Integer.parseInt(mapper.writeValueAsString(cafedao.insert_room(r)));
 				if (re != -1) {
@@ -334,7 +307,6 @@ public class CafeController {
 				rt.setTime_price(time_price[i]);
 				rt.setRoom_no(room_no_list.get(i));
 
-				System.out.println("rtVO: "+rt);
 				ObjectMapper mapper = new ObjectMapper();
 				re = Integer.parseInt(mapper.writeValueAsString(cafedao.insert_room_time(rt)));
 
@@ -473,7 +445,6 @@ public class CafeController {
 	@RequestMapping("/insertReserPayment")
 	public String insertReserPayment(int resultPrice, String coupon_no, int cust_no, String resultDate,
 			String resultTime, int resultPerson) {
-		System.out.println("insertReserPayment 컨트롤러");
 		// payment insert ==================================================
 		// pay_no 구하기 : max+1값
 		String pay_no = cafedao.getNextPayNo();
@@ -703,10 +674,6 @@ public class CafeController {
 	public String requestupload2(MultipartHttpServletRequest mtfRequest, int cafe_no, int cust_no) {
 		List<MultipartFile> fileList = mtfRequest.getFiles("file");
 		String src = mtfRequest.getParameter("src");
-		System.out.println("src value : " + src);
-		System.out.println("fileList:" + fileList);
-		System.out.println("cafe_no : " + cafe_no);
-		System.out.println("cust_no : " + cust_no);
 
 		String path = "/cafe_img/";
 
@@ -714,26 +681,16 @@ public class CafeController {
 			String originFileName = mf.getOriginalFilename(); // 원본 파일 명
 			long fileSize = mf.getSize(); // 파일 사이즈
 			String real = mtfRequest.getRealPath(path);
-
-			System.out.println("originFileName : " + originFileName);
-			System.out.println("fileSize : " + fileSize);
-			System.out.println("real : " + real);
-
 			String safeFile = real + System.currentTimeMillis() + originFileName;
 			String fname = safeFile;
 			fname = fname.substring(real.length());
 
-			System.out.println("fname : " + fname);
-			System.out.println("safeFile" + safeFile);
 			try {
 				mf.transferTo(new File(safeFile));
 
 				HashMap map = new HashMap();
 				map.put("fname", fname);
-				System.out.println("컨트롤러 다오호출전");
 				String str = cafedao.inserCafeReviewIMG(map);
-				System.out.println("컨트롤러 다오호출이후");
-				System.out.println(str);
 			} catch (IllegalStateException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -817,8 +774,6 @@ public class CafeController {
 			cafe_loc = sido + " " + gugun;
 		}
 
-		System.out.println(cafe_loc);
-		System.out.println(keyword);
 		HashMap map = new HashMap();
 		map.put("cafe_loc", cafe_loc);
 		map.put("keyword", keyword);
@@ -827,10 +782,8 @@ public class CafeController {
 		String str = "";
 		try {
 
-			System.out.println("평점" + start + " : " + end);
 			ObjectMapper mapper = new ObjectMapper();
 			str = mapper.writeValueAsString(cafedao.gradeSort(map));
-			System.out.println(str);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -848,8 +801,6 @@ public class CafeController {
 			cafe_loc = sido + " " + gugun;
 		}
 
-		System.out.println(cafe_loc);
-		System.out.println(keyword);
 		HashMap map = new HashMap();
 		map.put("cafe_loc", cafe_loc);
 		map.put("keyword", keyword);
@@ -857,8 +808,6 @@ public class CafeController {
 		map.put("end", end);
 		String str = "";
 		try {
-			System.out.println("판매" + start + " : " + end);
-
 			ObjectMapper mapper = new ObjectMapper();
 			str = mapper.writeValueAsString(cafedao.sellSort(map));
 			System.out.println(str);
@@ -879,8 +828,6 @@ public class CafeController {
 			cafe_loc = sido + " " + gugun;
 		}
 
-		System.out.println(cafe_loc);
-		System.out.println(keyword);
 		HashMap map = new HashMap();
 		map.put("cafe_loc", cafe_loc);
 		map.put("keyword", keyword);
@@ -892,7 +839,6 @@ public class CafeController {
 
 			ObjectMapper mapper = new ObjectMapper();
 			str = mapper.writeValueAsString(cafedao.passPriceSort(map));
-			System.out.println(str);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -910,8 +856,6 @@ public class CafeController {
 			cafe_loc = sido + " " + gugun;
 		}
 
-		System.out.println(cafe_loc);
-		System.out.println(keyword);
 		HashMap map = new HashMap();
 		map.put("cafe_loc", cafe_loc);
 		map.put("keyword", keyword);
@@ -922,7 +866,6 @@ public class CafeController {
 			System.out.println("룸" + start + " : " + end);
 			ObjectMapper mapper = new ObjectMapper();
 			str = mapper.writeValueAsString(cafedao.roomPriceSort(map));
-			System.out.println(str);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -940,8 +883,6 @@ public class CafeController {
 			cafe_loc = sido + " " + gugun;
 		}
 
-		System.out.println(cafe_loc);
-		System.out.println(keyword);
 		HashMap map = new HashMap();
 		map.put("cafe_loc", cafe_loc);
 		map.put("keyword", keyword);
@@ -951,7 +892,6 @@ public class CafeController {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			str = mapper.writeValueAsString(cafedao.searchCafe(map));
-			System.out.println(str);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -983,9 +923,6 @@ public class CafeController {
 			cafe_loc = sido + " " + gugun;
 		}
 
-		System.out.println(cafe_loc);
-		System.out.println(keyword);
-		System.out.println("판매개수" + start + " : " + end);
 		HashMap map = new HashMap();
 		map.put("cafe_loc", cafe_loc);
 		map.put("keyword", keyword);
@@ -1011,10 +948,7 @@ public class CafeController {
 		} else {
 			cafe_loc = sido + " " + gugun;
 		}
-
-		System.out.println(cafe_loc);
-		System.out.println(keyword);
-		System.out.println("평점" + start + " : " + end);
+		
 		HashMap map = new HashMap();
 		map.put("cafe_loc", cafe_loc);
 		map.put("keyword", keyword);
@@ -1041,9 +975,6 @@ public class CafeController {
 			cafe_loc = sido + " " + gugun;
 		}
 
-		System.out.println(cafe_loc);
-		System.out.println(keyword);
-		System.out.println("이용권" + start + " : " + end);
 		HashMap map = new HashMap();
 		map.put("cafe_loc", cafe_loc);
 		map.put("keyword", keyword);
@@ -1070,9 +1001,6 @@ public class CafeController {
 			cafe_loc = sido + " " + gugun;
 		}
 
-		System.out.println(cafe_loc);
-		System.out.println(keyword);
-		System.out.println("룸" + start + " : " + end);
 		HashMap map = new HashMap();
 		map.put("cafe_loc", cafe_loc);
 		map.put("keyword", keyword);
@@ -1093,8 +1021,6 @@ public class CafeController {
 	@RequestMapping("/cafeListAll")
 	public String cafeListAll(String start, String end) {
 		String str = "";
-		System.out.println(start);
-		System.out.println(end);
 		try {
 			HashMap map = new HashMap();
 			map.put("start", start);
@@ -1123,9 +1049,7 @@ public class CafeController {
 	@RequestMapping("/inqCount")
 	public String countCafePassSale(int cafe_no) {
 		String re = "";
-		System.out.println(cafe_no);
 		re = cafedao.inqCount(cafe_no);
-		System.out.println("또딸까운뜨" + re);
 		return re;
 	}
 
@@ -1134,7 +1058,6 @@ public class CafeController {
 	public String updateInq(String text, int inq_no) {
 		String str = "";
 		HashMap map = new HashMap();
-		System.out.println(text);
 		map.put("text", text);
 		map.put("inq_no", inq_no);
 		int re = cafedao.updateInq(map);
@@ -1152,8 +1075,6 @@ public class CafeController {
 	public String updateReview(String text, int review_no) {
 		String str = "";
 		HashMap map = new HashMap();
-		System.out.println(text);
-		System.out.println(review_no);
 		map.put("text", text);
 		map.put("review_no", review_no);
 		int re = cafedao.updateReview(map);
@@ -1176,8 +1097,6 @@ public class CafeController {
 		map.put("cust_no", cust_no);
 		map.put("issecret", issecret);
 
-		System.out.println("cafe_no : " + cafe_no + "/content : " + content + "/cust_no : " + cust_no + "/isssecret : "
-				+ issecret);
 		int re = cafedao.insertInq(map);
 
 		if (re > 0) {
@@ -1197,14 +1116,11 @@ public class CafeController {
 		map.put("cafe_no", cafe_no);
 		map.put("start", start);
 		map.put("end", end);
-		System.out.println("inq" + cafe_no + "/" + start + "/" + end);
 		for (InqVo vo : cafedao.inqAllList(map)) {
-			System.out.println(vo);
 		}
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			str = mapper.writeValueAsString(cafedao.inqAllList(map));
-			System.out.println(str);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -1218,7 +1134,6 @@ public class CafeController {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			str = mapper.writeValueAsString(cafedao.getChkBox(cafe_no));
-			System.out.println(str);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -1229,15 +1144,11 @@ public class CafeController {
 	public ModelAndView cafeDetail23(int cafe_no, int cust_no) {
 
 		ModelAndView mav = new ModelAndView();
-		System.out.println(cafedao.cafeDetail(cafe_no));
-		System.out.println(cafedao.getTotalAvg(cafe_no));
 		mav.addObject("cafe", cafedao.cafeDetail(cafe_no));
 		mav.addObject("pass", cafedao.passList(cafe_no));
 		mav.addObject("inqs", cafedao.inqList(cafe_no));
-		/* mav.addObject("review",cafedao.reviewList1St(cafe_no)); */
 		mav.addObject("cust", cafedao.getCustomer(cust_no));
 		mav.addObject("total", cafedao.getTotalAvg(cafe_no));
-		/* mav.addObject("chkbox", cafedao.getChkBox(cafe_no)); */
 
 		return mav;
 	}
@@ -1251,8 +1162,6 @@ public class CafeController {
 	public ModelAndView cafeDetail2(int cafe_no, int cust_no) {
 
 		ModelAndView mav = new ModelAndView();
-		System.out.println(cafedao.cafeDetail(cafe_no));
-		System.out.println(cafedao.getTotalAvg(cafe_no));
 		mav.addObject("cafe", cafedao.cafeDetail(cafe_no));
 		mav.addObject("pass", cafedao.passList(cafe_no));
 		mav.addObject("inqs", cafedao.inqList(cafe_no));
@@ -1267,8 +1176,6 @@ public class CafeController {
 	@RequestMapping("/cafeManage.do")
 	public ModelAndView cafeManage(int cafe_no) {
 		ModelAndView mav = new ModelAndView();
-		System.out.println(cafedao.cafeDetail(cafe_no));
-		System.out.println(cafedao.getTotalAvg(cafe_no));
 		mav.addObject("cafe", cafedao.cafeDetail(cafe_no));
 		mav.addObject("pass", cafedao.passList(cafe_no));
 		mav.addObject("inqs", cafedao.inqList(cafe_no));
@@ -1278,23 +1185,6 @@ public class CafeController {
 
 		return mav;
 	}
-
-	/*
-	 * @ResponseBody
-	 * 
-	 * @RequestMapping("cafeDetail") public String cafeDetail(int cafe_no) {
-	 * System.out.println(cafe_no); String str = ""; try { ObjectMapper mapper = new
-	 * ObjectMapper(); str = mapper.writeValueAsString(cafedao.cafeDetail(cafe_no));
-	 * }catch (Exception e) { e.printStackTrace(); }
-	 * 
-	 * return str; }
-	 */
-
-	/*
-	 * @RequestMapping("/cafeDetail.do") public void cafeDetail() {
-	 * 
-	 * }
-	 */
 
 	@RequestMapping("/blank1.do")
 	public void blank1() {
@@ -1326,7 +1216,6 @@ public class CafeController {
 		map.put("cafe_no", cafe_no);
 		map.put("start", start);
 		map.put("end", end);
-		System.out.println(cafe_no + "/" + start + "/" + end);
 
 		for (ReviewVo vo : cafedao.reviewList(map)) {
 			System.out.println(vo);
@@ -1334,7 +1223,6 @@ public class CafeController {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			str = mapper.writeValueAsString(cafedao.reviewList(map));
-			System.out.println(str);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -1345,7 +1233,6 @@ public class CafeController {
 	@RequestMapping("/reviewCount")
 	public String reviewCount(int cafe_no) {
 		String re = "";
-		System.out.println(cafe_no);
 		re = cafedao.reviewCount(cafe_no);
 		System.out.println("리뷰또딸까운뜨" + re);
 		return re;
@@ -1356,7 +1243,6 @@ public class CafeController {
 	public String insertReview(String review_content, int grade, int cafe_no, int cust_no) {
 		String str = "";
 		HashMap map = new HashMap();
-		System.out.println(review_content);
 		map.put("review_content", review_content);
 		map.put("grade", grade);
 		map.put("cafe_no", cafe_no);
@@ -1382,7 +1268,6 @@ public class CafeController {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			str = mapper.writeValueAsString(cafedao.getGradeCnt(cafe_no));
-			System.out.println(str);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -1397,7 +1282,6 @@ public class CafeController {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			str = mapper.writeValueAsString(cafedao.getReviewImg(review_no));
-			System.out.println(str);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}

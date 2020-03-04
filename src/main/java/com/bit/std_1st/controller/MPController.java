@@ -157,21 +157,6 @@ public class MPController {
 		}
 		return str;
 	}
-	
-//	@ResponseBody
-//	@RequestMapping("/myStdCnt")
-//	public String myStdCnt() {
-//		int founder_no = 1;
-//		String str = "";
-//		try {
-//			ObjectMapper mapper = new ObjectMapper();
-//			str = mapper.writeValueAsString(mp_dao.myStdCnt(founder_no));
-//
-//		} catch (Exception e) {
-//			System.out.println(e.getMessage());
-//		}
-//		return str;
-//	}
 
 	//----------------스투더 페이지---------------------------------------
 	
@@ -184,11 +169,9 @@ public class MPController {
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 				re = mapper.writeValueAsString(mp_dao.cnt_all_mypage(cust_no));
-				System.out.println("전체목록 수:"+re);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			System.out.println(re);
 			return re;
 		}
 
@@ -214,7 +197,6 @@ public class MPController {
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 				re = mapper.writeValueAsString(mp_dao.cnt_reserved_mypage(cust_no));
-				System.out.println("예약목록 수:"+re);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -229,7 +211,6 @@ public class MPController {
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 				re = mapper.writeValueAsString(mp_dao.reserved_mypage(cust_no));
-				System.out.println("에약목록:" + re);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -274,7 +255,6 @@ public class MPController {
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 				re = mapper.writeValueAsString(mp_dao.cnt_pass_mypage(cust_no));
-				System.out.println("controller's re at cnt_pass:"+re);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -289,7 +269,6 @@ public class MPController {
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 				re = mapper.writeValueAsString(mp_dao.pass_mypage(cust_no));
-				System.out.println("controller's re at list of pass:"+re);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

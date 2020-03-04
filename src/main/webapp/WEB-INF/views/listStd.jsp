@@ -526,7 +526,7 @@
 									
 									var div3_2 = $("<div class='col-md-6 col-sm-12 py-3'></div>");
 									var a_title;
-									if(todate<=getdate) {	
+									if(todate<=getdate) {
 										a_title = $("<a></a>").attr({"href" : "detailStd.do?std_no="+ std.std_no +"&isClosed=-1"});
 									} else {
 										a_title = $("<a></a>").attr({"href" : "detailStd.do?std_no="+ std.std_no +"&isClosed=1"});
@@ -684,16 +684,6 @@
 			getListStd();
 			paging();
 
-			/*$(window).scroll(function() {
-				var win = $(window)
-				var scrollHeight = win.scrollTop() + win.height();
-				var documentHeight = $(document).height();
-
-				if (documentHeight <= scrollHeight + 300) {
-					list();
-				}
-			})
-			*/
 	});
 	</script>
 	  <script src="js/plugins/plugins.js"></script> 
