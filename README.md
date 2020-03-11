@@ -1,4 +1,7 @@
-## STDPICK[ (프로젝트 소개 PDF)](https://github.com/soyeondev/stdpick_project/blob/master/stdpick_project.pdf)
+## STDPICK
+[ (프로젝트 링크)](http://13.125.217.130:8080/)
+[ (프로젝트 소개 PDF)](https://github.com/soyeondev/stdpick_project/blob/master/stdpick_project.pdf)
+
 **스터디카페 실시간 예약과 스터디모임 개설 및 모집을 중계해주는 모임 플랫폼 웹 어플리케이션**  
 - 2019년 비트캠프 자바개발자 양성과정 팀 프로젝트
 - 인원: 6명
