@@ -49,49 +49,37 @@ public class DiningController {
         	
         	for(int i = 0; i < content_all.size(); i++) {
         		HashMap map = new HashMap();
-        		
-//        		System.out.println(content_all.get(0));
+
         		Element thumb = content_all.get(i);
-//        		System.out.println(thumb);
         		Element thumb_divs = thumb.select(".thumb").get(0);
-//        		System.out.println(thumb_divs);
         		
         		// 썸네일 이미지0
         		String thumb_nail = thumb_divs.select("img").attr("src");
-//        		System.out.println(thumb_nail);
         		map.put("thumb_nail", thumb_nail);
         		
         		// 게시물 링크
         		String link = thumb_divs.select("a").attr("href");
-//        		System.out.println(link);
         		map.put("link", link);
         		
         		// 게시물 등록일0
 	    		Element regdate = content_all.select(".txt_inline").get(i);
-//        		System.out.println(regdate.text());
         		map.put("regdate", regdate.text());
         		
         		// 게시물 제목0
         		Element title = content_all.select(".sh_blog_title").get(i);
-//        		System.out.println(title.text());
         		map.put("title", title.text());
         		
         		// 게시물 내용0
         		Element passage = content_all.select(".sh_blog_passage").get(i);
-//        		System.out.println(passage.text());
         		map.put("passage", passage.text());
         		
         		// 블로그 제목0
         		Element blog_name = content_all.select(".txt84").get(i);
-//        		System.out.println(blog_name.text());
         		map.put("blog_name", blog_name.text());
         		
         		// 블로그 링크0
         		Element blog_url = content_all.select(".url").get(i);
-//        		System.out.println(blog_url.text());
         		map.put("blog_url", blog_url.text());
-        		
-//        		System.out.println("-----------------------------------------------------------------------");
    
         		list.add(map);
         		
@@ -102,12 +90,11 @@ public class DiningController {
         }
         
 	}
-//		System.out.println(list);
+
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			str = mapper.writeValueAsString(list);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return str;

@@ -343,9 +343,6 @@ public class CSController {
 		mav.addObject("c",cs_dao.getCustomer(cust_no));
 		mav.addObject("p",cs_dao.getProvider(provider_no));
 		
-		System.out.println("c:"+cs_dao.getCustomer(cust_no));
-		System.out.println("p:"+cs_dao.getProvider(provider_no));
-		
 		mav.addObject("sysdate",sf.format(nowTime));
 
 		return mav;
@@ -360,12 +357,7 @@ public class CSController {
 		qavo.setQa_no(cs_dao.nextNoQa());
 		qavo.setB_ref(qavo.getQa_no());
 		qavo.setB_level(1);
-		qavo.setB_step(0);		
-		
-		System.out.println("Qa_no:"+cs_dao.nextNoQa());
-		System.out.println("Qa_content:"+qavo.getQa_content());
-		System.out.println("cust_name:"+qavo.getCust_name()+"/ cust_no:"+qavo.getCust_no());
-		System.out.println("pro_name:"+qavo.getPro_name()+" / provider_no:"+qavo.getProvider_no());
+		qavo.setB_step(0);
 
 		int re = cs_dao.insertQa(qavo);
 
