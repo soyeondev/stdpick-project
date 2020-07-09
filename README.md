@@ -17,7 +17,7 @@
 - JSP / CSS / Servlet
 - JQuery, Ajax, JSON, JSTL
 - Bootstrap
-- Eclipse, SpringTooSuite(STS), Bracket
+- SpringTooSuite(STS)
 
 ## 어플리케이션 기능
  - 스터디카페 실시간 예약과 스터디모임 개설 및 모집, 신청할 수 있는 시스템 구현
@@ -25,7 +25,7 @@
  - 추천맛집에 대한 정보를 열람하기 위한 블로그 웹크롤링 기능
  - 웹사이트 이용자를 위한 SNS 기능(팔로잉, 팔로워, 게시글 등록 및 검색)
 
-## 담당 파트
+## 개인 파트
 - 맛집페이지 [jsp](https://github.com/soyeondev/stdpick_project/blob/master/src/main/webapp/WEB-INF/views/diningSch.jsp), [Controller](https://github.com/soyeondev/stdpick_project/blob/master/src/main/java/com/bit/std_1st/controller/DiningController.java)
 - 개인마이페이지 [jsp](https://github.com/soyeondev/stdpick_project/blob/master/src/main/webapp/WEB-INF/views/custMyPage.jsp),  [Controller](https://github.com/soyeondev/stdpick_project/blob/master/src/main/java/com/bit/std_1st/controller/MPController.java)
 - 스터디모임 개설페이지 [jsp](https://github.com/soyeondev/stdpick_project/blob/master/src/main/webapp/WEB-INF/views/insertStd.jsp),  [Controller](https://github.com/soyeondev/stdpick_project/blob/master/src/main/java/com/bit/std_1st/controller/StdController.java)
