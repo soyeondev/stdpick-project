@@ -341,7 +341,6 @@ public class DBManager {
 	//-----------회원가입 //로그인 -----------------------------
 	/* 媛쒖씤 �쉶�썝媛��엯 */
 	public static void insertCustomer(CustomerVo c) {
-		System.out.println("DB : " + c );
 		SqlSession session = factory.openSession();
 		session.insert("user.insertCustomer",c);
 		session.commit();
@@ -371,9 +370,7 @@ public class DBManager {
         }
 		
 		SqlSession session = factory.openSession();
-		System.out.println("db"+c.getCust_nick());
 		Integer cnt = session.selectOne("user.check_nick",c);
-		System.out.println("/?????"+cnt);
 		session.close();
 		return cnt;
 	}
@@ -382,16 +379,13 @@ public class DBManager {
 	/* 媛쒖씤 �븘�씠�뵒 以묐났 泥댄겕 */
 	public static Integer check_id(CustomerVo c) {
 		try(SqlSession session = factory.openSession()){
-            System.out.println("session:"+session);
             
         }catch(Exception e){
             e.printStackTrace();
         }
 		
 		SqlSession session = factory.openSession();
-		System.out.println("db"+c.getId());
 		Integer cnt = session.selectOne("user.check_id",c);
-		System.out.println("/?????"+cnt);
 		session.close();
 		return cnt;
 	}
@@ -429,9 +423,7 @@ public class DBManager {
         }
 		
 		SqlSession session = factory.openSession();
-		System.out.println("db"+p.getPro_nick());
 		Integer cnt = session.selectOne("user.check_pro_nick",p);
-		System.out.println("/?????"+cnt);
 		session.close();
 		return cnt;
 	}
@@ -446,9 +438,7 @@ public class DBManager {
         }
 		
 		SqlSession session = factory.openSession();
-		System.out.println("db"+p.getId());
 		Integer cnt = session.selectOne("user.check_pro_id",p);
-		System.out.println("/?????"+cnt);
 		session.close();
 		return cnt;
 	}
@@ -480,7 +470,6 @@ public class DBManager {
 		SqlSession session = factory.openSession();
 		list = session.selectList("cafe.gradeSort",map);
 		session.close();
-		System.out.println(list);
 		
 		return list;
 	}
@@ -490,7 +479,6 @@ public class DBManager {
 		SqlSession session = factory.openSession();
 		list = session.selectList("cafe.sellSort",map);
 		session.close();
-		System.out.println(list);
 		
 		return list;
 	}
@@ -500,7 +488,6 @@ public class DBManager {
 		SqlSession session = factory.openSession();
 		list = session.selectList("cafe.roomPriceSort",map);
 		session.close();
-		System.out.println(list);
 		
 		return list;
 	}
@@ -510,7 +497,6 @@ public class DBManager {
 		SqlSession session = factory.openSession();
 		list = session.selectList("cafe.passPriceSort",map);
 		session.close();
-		System.out.println(list);
 		
 		return list;
 	}
@@ -520,7 +506,6 @@ public class DBManager {
 		SqlSession session = factory.openSession();
 		list = session.selectList("cafe.searchCafe",map);
 		session.close();
-		System.out.println(list);
 		
 		return list;
 	}
@@ -700,7 +685,6 @@ public class DBManager {
 		String str = "";
 		int re = -1;
 		SqlSession session = factory.openSession();
-		System.out.println("매니저");
 		re =  session.insert("cafe.inserCafeReviewIMG", map);
 		session.commit();
 		session.close();
@@ -712,9 +696,7 @@ public class DBManager {
 	public static int updateInq(HashMap map) {
 		int re = -1;
 		SqlSession session = factory.openSession();
-		System.out.println("업뎃ㄱㄱ");
 		re =  session.update("cafe.updateInq", map);
-		System.out.println(re);
 		session.commit();
 		session.close();
 		
@@ -725,9 +707,7 @@ public class DBManager {
 		// TODO Auto-generated method stub
 		int re = -1;
 		SqlSession session = factory.openSession();
-		System.out.println("리뷰업뎃ㄱㄱ");
 		re =  session.update("cafe.updateReview", map);
-		System.out.println(re);
 		session.commit();
 		session.close();
 		

@@ -25,9 +25,7 @@ public class DiningController {
 	public LoginVo initLoginVo() {
 		return null;
 	}
-	
-	
-	
+
 	@RequestMapping("diningSch")
 	public void diningSch() {}
 
