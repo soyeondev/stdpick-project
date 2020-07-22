@@ -2,6 +2,8 @@ package com.bit.std_1st.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -29,65 +31,119 @@ public class DiningController {
 	@RequestMapping("diningSch")
 	public void diningSch() {}
 
-	@RequestMapping("diningSch2")
-	public void diningSch2() {}
-	
 	@ResponseBody
 	@RequestMapping("/diningList.do")
 	public String getDiningList(String enc_query) {
+		long start = System.currentTimeMillis();
+
 		String str = "";
 		ArrayList list = new ArrayList();
-		for(int j = 0 ; j < 10 ; j++) {
-        String url = "https://search.naver.com/search.naver?date_from=&date_option=0&date_to=&dup_remove=1&nso=&post_blogurl=&post_blogurl_without=&query="+enc_query+"&sm=tab_pge&srchby=all&st=sim&where=post&start="+j+"1";
-//        String url = "https://search.naver.com/search.naver?where=post&sm=tab_jum&query=밀플랜비";
-        try {
-        	Document doc = Jsoup.connect(url).get();
-        	Element container = doc.select("#container").get(0);
-        	Elements content_all = container.select(".sh_blog_top");
-        	
-        	for(int i = 0; i < content_all.size(); i++) {
-        		HashMap map = new HashMap();
 
-        		Element thumb = content_all.get(i);
-        		Element thumb_divs = thumb.select(".thumb").get(0);
-        		
-        		// 썸네일 이미지0
-        		String thumb_nail = thumb_divs.select("img").attr("src");
-        		map.put("thumb_nail", thumb_nail);
-        		
-        		// 게시물 링크
-        		String link = thumb_divs.select("a").attr("href");
-        		map.put("link", link);
-        		
-        		// 게시물 등록일0
-	    		Element regdate = content_all.select(".txt_inline").get(i);
-        		map.put("regdate", regdate.text());
-        		
-        		// 게시물 제목0
-        		Element title = content_all.select(".sh_blog_title").get(i);
-        		map.put("title", title.text());
-        		
-        		// 게시물 내용0
-        		Element passage = content_all.select(".sh_blog_passage").get(i);
-        		map.put("passage", passage.text());
-        		
-        		// 블로그 제목0
-        		Element blog_name = content_all.select(".txt84").get(i);
-        		map.put("blog_name", blog_name.text());
-        		
-        		// 블로그 링크0
-        		Element blog_url = content_all.select(".url").get(i);
-        		map.put("blog_url", blog_url.text());
-   
-        		list.add(map);
-        		
-        	}
-        	
-        } catch(Exception e) {
-            
-        }
-        
-	}
+		for(int j = 0 ; j < 1 ; j++) {	// 10 페이지까지 크롤링
+			String url = "https://search.naver.com/search.naver?date_from=&date_option=0&date_to=&dup_remove=1&nso=&post_blogurl=&post_blogurl_without=&query="+enc_query+"&sm=tab_pge&srchby=all&st=sim&where=post&start="+j+"1";
+			try {
+				Document doc = Jsoup.connect(url).get();
+
+				Element container = doc.select("#container").first();
+				Elements content_all = container.select(".sh_blog_top");
+
+				for(int i = 0; i < content_all.size(); i++) {
+					HashMap map = new HashMap();
+
+					Element thumb = content_all.get(i);
+
+					String blog_li = thumb.toString().replace('"', ' ');
+					blog_li = blog_li.replaceAll("(\r\n|\r|\n|\n\r)", "");
+
+					// 썸네일 이미지
+					Pattern patn = Pattern.compile("[<].*?src=(.*?)alt.*?[>]");
+					Matcher matr = patn.matcher(blog_li);
+
+					while(matr.find()) {
+						map.put("thumb_nail", matr.group(1));
+
+						if(matr.group(1) == null) {
+							break;
+						}
+					}
+
+					// 게시물 링크
+					patn = Pattern.compile("[<a].*?href=(.*?)target.*?sp_thmb.*?[>]");
+					matr = patn.matcher(blog_li);
+
+					while(matr.find()) {
+						map.put("link", matr.group(1));
+
+						if(matr.group(1) == null) {
+							break;
+						}
+					}
+
+					// 게시물 등록일
+					patn = Pattern.compile(".*?txt_inline.*?>(.*?)<");
+					matr = patn.matcher(blog_li);
+
+					while(matr.find()) {
+						map.put("regdate", matr.group(1));
+
+						if(matr.group(1) == null) {
+							break;
+						}
+					}
+
+					// 게시물 제목
+					patn = Pattern.compile(".*?sh_blog_title.*?>(.*?)</a>");
+					matr = patn.matcher(blog_li);
+
+					while(matr.find()) {
+						map.put("title", matr.group(1));
+
+						if(matr.group(1) == null) {
+							break;
+						}
+					}
+
+					// 게시물 내용
+					patn = Pattern.compile(".*?sh_blog_passage.*?>(.*?)</dd>");
+					matr = patn.matcher(blog_li);
+
+					while(matr.find()) {
+						map.put("passage", matr.group(1));
+
+						if(matr.group(1) == null) {
+							break;
+						}
+					}
+
+					// 블로그 제목
+					patn = Pattern.compile(".*?txt84.*?>(.*?)</a>");
+					matr = patn.matcher(blog_li);
+
+					while(matr.find()) {
+						map.put("blog_name", matr.group(1));
+						if(matr.group(1) == null) {
+							break;
+						}
+					}
+
+					// 블로그 링크
+					patn = Pattern.compile(".*?class= url.*?>(.*?)</a>");
+					matr = patn.matcher(blog_li);
+
+					while(matr.find()) {
+						map.put("blog_url", matr.group(1));
+						if(matr.group(1) == null) {
+							break;
+						}
+					}
+					list.add(map);
+				}
+
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+
+		}
 
 		ObjectMapper mapper = new ObjectMapper();
 		try {
@@ -95,9 +151,13 @@ public class DiningController {
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
+
+		long end = System.currentTimeMillis();
+		System.out.println("실행시간: "+(end - start )/1000.0 +"초");
+		// 2.773초
+
 		return str;
+
 	}
-	
-	@RequestMapping("/diningList")
-	public void diningList() {}
+
 }

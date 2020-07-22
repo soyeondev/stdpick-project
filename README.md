@@ -13,10 +13,9 @@
 - Java
 - Apache Tomcat 9.0
 - JDBC - Oracle
-- JSP / CSS / Servlet
 - JQuery, Ajax, JSON, JSTL
 - Bootstrap
-- SpringTooSuite(STS)
+- SpringToolSuite(STS)
 
 ## 어플리케이션 기능
  - 스터디카페 실시간 예약과 스터디모임 개설 및 모집, 신청할 수 있는 시스템 구현
