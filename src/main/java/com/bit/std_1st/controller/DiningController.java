@@ -38,7 +38,7 @@ public class DiningController {
 
 		String str = "";
 		ArrayList list = new ArrayList();
-		for(int j = 0 ; j < 1 ; j++) {	// 10 페이지까지 크롤링
+		for(int j = 0 ; j < 10 ; j++) {	// 10 페이지까지 크롤링
 			String url = "https://search.naver.com/search.naver?date_from=&date_option=0&date_to=&dup_remove=1&nso=&post_blogurl=&post_blogurl_without=&query="+enc_query+"&sm=tab_pge&srchby=all&st=sim&where=post&start="+j+"1";
 			try {
 				Document doc = Jsoup.connect(url).get();

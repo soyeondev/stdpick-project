@@ -57,22 +57,6 @@ public class SNSController {
 		this.user_dao = user_dao;
 	}
 	
-//	@ResponseBody
-//	@RequestMapping("/cntFollower")
-//	public int cntFollower(String f_type, int f_no) {
-//		int re = -1;
-//		re = sns_dao.cntFollower(f_type, f_no);
-//		return re;
-//	}
-//	
-//	@ResponseBody
-//	@RequestMapping("/cntFollowing")
-//	public int cntFollowing(String type, int no) {
-//		int re= -1;
-//		re = sns_dao.cntFollowing(type, no);
-//		return re;
-//	}
-	
 	@RequestMapping("/listSNSImg.do")
 	public void listSNSImg () {
 	}
@@ -113,8 +97,6 @@ public class SNSController {
 		map.put("sns_no",sns_no);
 		map.put("cust_no",cust_no);
 		map.put("provider_no",provider_no);
-		
-		System.out.println("sns_no="+sns_no+"/cust_no="+cust_no+"/provider_no="+provider_no);
 
 		re = sns_dao.isClicked(map);
 

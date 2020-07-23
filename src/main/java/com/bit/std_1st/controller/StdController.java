@@ -173,8 +173,6 @@ public class StdController {
 			
 			if(upload.isEmpty()) {
 				fname = oldName;
-				System.out.println(fname);
-				System.out.println("잎들어옴");
 			}else {
 				fname = System.currentTimeMillis() + upload.getOriginalFilename();
 				
@@ -242,7 +240,6 @@ public class StdController {
 		std_dao.deleteAply(apply_no);
 		mav.addObject("apply_no", apply_no);
 		mav.setViewName("manageStd");
-		System.out.println("deleteAply 업데이트 컨트롤러 넘어옴2");
 		return mav;
 
 	}
@@ -259,9 +256,7 @@ public class StdController {
 	public ModelAndView applyStdPost(StdApplyVo vo) {
 		ModelAndView mav = new ModelAndView("redirect:StuderApplySuccess?std_no="+vo.getStd_no()+"&isClosed=-1");
 		int re = -1;
-		System.out.println("applyVO : "+vo.toString());
-		
-		System.out.println("신청고객번호:" + vo.getCust_no());
+
 		vo.setApply_no(std_dao.getNextNoApply());
 		re = std_dao.insertStdApply(vo);
 		
@@ -323,9 +318,6 @@ public class StdController {
 		mav.addObject("s", std_dao.confStd(cust_no, apply_no));
 		return mav;
 	}
-
-
-	// ----------------------------------------한별코드(listStd, detailStd)
 
 	int pageSIZE = 5;
 	// 한화면에 보여줄 레코드의 수
