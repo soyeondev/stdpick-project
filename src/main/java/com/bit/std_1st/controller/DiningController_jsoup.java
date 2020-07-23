@@ -26,6 +26,7 @@ public class DiningController_jsoup {
 	@RequestMapping("/diningList_j.do")
 	public String getDiningList(String enc_query) {
 		long start = System.currentTimeMillis();
+
 		String str = "";
 		ArrayList list = new ArrayList();
 		for(int j = 0 ; j < 10 ; j++) {	// 10 페이지까지 크롤링
@@ -38,8 +39,8 @@ public class DiningController_jsoup {
 				for(int i = 0; i < content_all.size(); i++) {
 					HashMap map = new HashMap();
 
-					Element thumb = content_all.get(i);
-					Element thumb_divs = thumb.select(".thumb").first();
+					Element content = content_all.get(i);
+					Element thumb_divs = content.select(".thumb").first();
 
 					// 썸네일 이미지
 					String thumb_nail = thumb_divs.select("img").attr("src");
@@ -50,23 +51,23 @@ public class DiningController_jsoup {
 					map.put("link", link);
 
 					// 게시물 등록일
-					Element regdate = content_all.select(".txt_inline").get(i);
+					Element regdate = content.select(".txt_inline").first();
 					map.put("regdate", regdate.text());
 
 					// 게시물 제목
-					Element title = content_all.select(".sh_blog_title").get(i);
+					Element title = content.select(".sh_blog_title").first();
 					map.put("title", title.text());
 
 					// 게시물 내용
-					Element passage = content_all.select(".sh_blog_passage").get(i);
+					Element passage = content.select(".sh_blog_passage").first();
 					map.put("passage", passage.text());
 
 					// 블로그 제목
-					Element blog_name = content_all.select(".txt84").get(i);
+					Element blog_name = content.select(".txt84").first();
 					map.put("blog_name", blog_name.text());
 
 					// 블로그 링크
-					Element blog_url = content_all.select(".url").get(i);
+					Element blog_url = content_all.select(".url").first();
 					map.put("blog_url", blog_url.text());
 
 					list.add(map);
@@ -74,7 +75,7 @@ public class DiningController_jsoup {
 				}
 
 			} catch(Exception e) {
-
+				e.printStackTrace();
 			}
 
 		}
@@ -88,7 +89,7 @@ public class DiningController_jsoup {
 
 		long end = System.currentTimeMillis();
 		System.out.println("실행시간: "+(end - start )/1000.0 +"초");
-		// 3.286초
+		// 3.037초
 
 		return str;
 

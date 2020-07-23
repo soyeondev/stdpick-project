@@ -38,7 +38,6 @@ public class DiningController {
 
 		String str = "";
 		ArrayList list = new ArrayList();
-
 		for(int j = 0 ; j < 1 ; j++) {	// 10 페이지까지 크롤링
 			String url = "https://search.naver.com/search.naver?date_from=&date_option=0&date_to=&dup_remove=1&nso=&post_blogurl=&post_blogurl_without=&query="+enc_query+"&sm=tab_pge&srchby=all&st=sim&where=post&start="+j+"1";
 			try {
@@ -56,7 +55,7 @@ public class DiningController {
 					blog_li = blog_li.replaceAll("(\r\n|\r|\n|\n\r)", "");
 
 					// 썸네일 이미지
-					Pattern patn = Pattern.compile("[<].*?src=(.*?)alt.*?[>]");
+					Pattern patn = Pattern.compile("<.*?src=(.*?)alt.*?>");
 					Matcher matr = patn.matcher(blog_li);
 
 					while(matr.find()) {
@@ -68,7 +67,7 @@ public class DiningController {
 					}
 
 					// 게시물 링크
-					patn = Pattern.compile("[<a].*?href=(.*?)target.*?sp_thmb.*?[>]");
+					patn = Pattern.compile("<a.*?href=(.*?)target.*?sp_thmb.*?>");
 					matr = patn.matcher(blog_li);
 
 					while(matr.find()) {
@@ -136,7 +135,9 @@ public class DiningController {
 							break;
 						}
 					}
+
 					list.add(map);
+
 				}
 
 			} catch(Exception e) {
@@ -154,7 +155,7 @@ public class DiningController {
 
 		long end = System.currentTimeMillis();
 		System.out.println("실행시간: "+(end - start )/1000.0 +"초");
-		// 2.773초
+		// 실행시간: 2.774초
 
 		return str;
 
